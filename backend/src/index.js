@@ -64,7 +64,7 @@ app.use((err, _req, res, _next) => {
 const start = async () => {
   await connectDB();
 
-  const PORT = process.env.PORT || config.port || 4000;
+  const PORT = process.env.PORT || config.port;
 
   app.listen(PORT, () => {
     console.log(`Gateway listening on port ${PORT}`);
