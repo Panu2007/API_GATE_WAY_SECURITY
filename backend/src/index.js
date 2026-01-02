@@ -4,6 +4,7 @@ import cors from "cors";
 import morgan from "morgan";
 import { connectDB } from "./config/db.js";
 import { config } from "./config/env.js";
+import { geoEnrichment } from "./middleware/geoEnrichment.js";
 import { ipFilter } from "./middleware/ipFilter.js";
 import { threatDetection } from "./middleware/threatDetection.js";
 import { validateRequest } from "./middleware/validation.js";
@@ -11,6 +12,7 @@ import { authMiddleware, requireRole } from "./middleware/auth.js";
 import { rateLimit } from "./middleware/rateLimit.js";
 import { cacheMiddleware } from "./middleware/cache.js";
 import { requestLogger } from "./middleware/requestLogger.js";
+import { riskScore } from "./middleware/riskScore.js";
 import authRouter from "./routes/auth.js";
 import gatewayRouter from "./routes/gateway.js";
 import adminRouter from "./routes/admin.js";
@@ -37,9 +39,11 @@ if (config.httpsEnabled) {
   });
 }
 
+app.use(geoEnrichment);
 app.use(ipFilter);
 app.use(threatDetection);
 app.use(validateRequest);
+app.use(riskScore);
 app.use(requestLogger);
 
 app.get("/health", (_req, res) => res.json({ status: "ok", time: new Date().toISOString() }));

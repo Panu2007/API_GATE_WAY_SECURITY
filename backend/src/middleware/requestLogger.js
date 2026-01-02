@@ -14,6 +14,9 @@ export const requestLogger = async (req, res, next) => {
         path: req.originalUrl,
         statusCode: res.statusCode,
         userAgent: req.headers["user-agent"],
+        riskLevel: req.context?.risk?.level || "LOW",
+        riskScore: req.context?.risk?.score || 10,
+        geo: req.context?.geo || undefined,
         details: {
           durationMs: Date.now() - start,
         },

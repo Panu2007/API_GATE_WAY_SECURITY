@@ -7,6 +7,11 @@ const blockedIPSchema = new mongoose.Schema(
     mode: { type: String, enum: ["block", "allow"], default: "block" },
     blocked: { type: Boolean, default: true },
     blockedUntil: { type: Date },
+    geo: {
+      country: { type: String, default: "Unknown" },
+      city: { type: String, default: "Unknown" },
+      source: { type: String, default: "derived" },
+    },
   },
   { timestamps: true }
 );

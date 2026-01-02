@@ -1,27 +1,34 @@
 import NodeCache from "node-cache";
-import { config } from "../config/env.js";
 
-const cache = new NodeCache({ stdTTL: config.cacheTtlSeconds, maxKeys: config.cacheMaxItems });
+const cache = new NodeCache({ stdTTL: 30 });
 
 export const cacheMiddleware = (req, res, next) => {
-  if (req.method !== "GET") return next();
-  const key = `${req.method}:${req.originalUrl}:${req.context?.apiKeyId || "anon"}`;
-  const hit = cache.get(key);
-  if (hit) {
-    return res.json(hit);
+  const key = `${req.method}:${req.originalUrl}`;
+
+  const cached = cache.get(key);
+  if (cached) {
+    return res.json(cached);
   }
-  const json = res.json.bind(res);
+
+  const originalJson = res.json.bind(res);
   res.json = (body) => {
-    cache.set(key, body);
-    return json(body);
+    const safeBody =
+      body && typeof body === "object"
+        ? JSON.parse(JSON.stringify(body))
+        : body;
+
+    cache.set(key, safeBody);
+    return originalJson(safeBody);
   };
-  return next();
+
+  next();
 };
 
-export const invalidateCache = (pattern) => {
+// 🔑 ADD THIS EXPORT (fixes your error)
+export const invalidateCache = (pattern = "") => {
   const keys = cache.keys();
   keys.forEach((key) => {
-    if (pattern === "*" || key.includes(pattern)) {
+    if (!pattern || key.includes(pattern)) {
       cache.del(key);
     }
   });

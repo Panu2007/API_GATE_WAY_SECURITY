@@ -46,7 +46,7 @@ const flagThreat = async (req, reason, details) => {
   try {
     await BlockedIP.findOneAndUpdate(
       { ip: req.ip },
-      { blocked: true, reason },
+      { blocked: true, reason, geo: req.context?.geo },
       { upsert: true }
     );
     await Log.create({
@@ -56,6 +56,9 @@ const flagThreat = async (req, reason, details) => {
       apiKey: req.context?.apiKeyId,
       method: req.method,
       path: req.originalUrl,
+      riskLevel: "HIGH",
+      riskScore: 95,
+      geo: req.context?.geo,
       details,
     });
   } catch (err) {

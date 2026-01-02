@@ -6,6 +6,7 @@ import { BlockedIP } from "../models/BlockedIP.js";
 import { Log } from "../models/Log.js";
 import { generateApiKey, hashValue } from "../utils/crypto.js";
 import { config } from "../config/env.js";
+import { geoLookup } from "../utils/geo.js";
 import bcrypt from "bcryptjs";
 
 const seed = async () => {
@@ -47,8 +48,8 @@ const seed = async () => {
   ]);
 
   await BlockedIP.create([
-    { ip: "203.0.113.10", reason: "demo-block", blocked: true, mode: "block" },
-    { ip: "198.51.100.5", reason: "demo-allow", blocked: false, mode: "allow" },
+    { ip: "203.0.113.10", reason: "demo-block", blocked: true, mode: "block", geo: geoLookup("203.0.113.10") },
+    { ip: "198.51.100.5", reason: "demo-allow", blocked: false, mode: "allow", geo: geoLookup("198.51.100.5") },
   ]);
 
   await Log.create({

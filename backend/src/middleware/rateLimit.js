@@ -41,6 +41,9 @@ export const rateLimit = async (req, res, next) => {
     apiKey: apiKeyId,
     method: req.method,
     path: req.originalUrl,
+    geo: req.context?.geo,
+    riskLevel: "MEDIUM",
+    riskScore: 60,
     details: {
       perKey: perKeyRecord,
       perRoute: perRouteRecord,
@@ -59,7 +62,7 @@ const maybeAutoBlock = async (req, counter) => {
     }
     await BlockedIP.findOneAndUpdate(
       { ip: req.ip },
-      { blocked: true, reason: "auto-rate-limit" },
+      { blocked: true, reason: "auto-rate-limit", geo: req.context?.geo },
       { upsert: true }
     );
     await Log.create({
@@ -68,6 +71,9 @@ const maybeAutoBlock = async (req, counter) => {
       ip: req.ip,
       apiKey: req.context?.apiKeyId,
       path: req.originalUrl,
+      geo: req.context?.geo,
+      riskLevel: "HIGH",
+      riskScore: 90,
     });
   } catch (err) {
     console.error("Auto-block failed", err);

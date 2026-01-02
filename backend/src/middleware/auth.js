@@ -75,6 +75,7 @@ const logAuthFailure = async (req, message) => {
       method: req.method,
       path: req.originalUrl,
       userAgent: req.headers["user-agent"],
+      geo: req.context?.geo || undefined,
     });
   } catch (err) {
     console.error("Failed to log auth failure", err);
