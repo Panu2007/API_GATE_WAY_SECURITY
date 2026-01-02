@@ -66,11 +66,11 @@ const start = async () => {
 
   const PORT = process.env.PORT || config.port;
 
-  app.listen(PORT, () => {
+  app.listen(PORT, "0.0.0.0", () => {
     console.log(`Gateway listening on port ${PORT}`);
   });
 };
+
 start().catch((err) => {
   console.error("Failed to start server", err);
-  process.exit(1);
 });
