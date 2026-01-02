@@ -63,11 +63,13 @@ app.use((err, _req, res, _next) => {
 
 const start = async () => {
   await connectDB();
-  app.listen(config.port, () => {
-    console.log(`Gateway listening on port ${config.port}`);
+
+  const PORT = process.env.PORT || config.port || 4000;
+
+  app.listen(PORT, () => {
+    console.log(`Gateway listening on port ${PORT}`);
   });
 };
-
 start().catch((err) => {
   console.error("Failed to start server", err);
   process.exit(1);
